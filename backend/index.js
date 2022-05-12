@@ -9,6 +9,9 @@ const mongooseOptions = {
   useNewUrlParser: true
 }
 
+const pinRoutes = require('./routes/pins');
+const userRoutes = require('./routes/users');
+
 mongoose
   .connect(process.env.MONGO_URL, mongooseOptions)
   .then(() => {
@@ -22,5 +25,8 @@ app.listen(port, () => {
   console.log(`Server running at port ${port}`);
 });
 
+app.use(express.json());
 
+app.use('/api/pins', pinRoutes);
 
+app.use('/api/users', userRoutes);
