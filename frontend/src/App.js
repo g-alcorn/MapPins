@@ -17,7 +17,7 @@ function App() {
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlace] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
-  const currentUser = 'john-doe'
+  const [currentUser, setCurrentUser] = useState('');
 
   // On page load
   useEffect(() => {
@@ -57,6 +57,27 @@ function App() {
     });
   };
 
+  const handleSubmit = async (click) => {
+    click.preventDefault();
+
+    const newPin = {
+      username: currentUser,
+      lat: newPlace.latitude,
+      long: newPlace.longitude,
+      title: newPlace.title,
+      description: newPlace.description,
+      rating: newPlace.rating
+    };
+
+    try {
+      const res = await axios.post('api/pins', newPin)
+      setPins([...pins, res.data]);
+      setNewPlace(null);
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
   return (   
     <div className="App">
       <Map
@@ -70,10 +91,14 @@ function App() {
       >
         {pins.map((pin) => (
           <>
-            <Marker latitude={pin.lat} longitude={pin.long}>
+            <Marker 
+              latitude={pin.lat} 
+              longitude={pin.long}
+              anchor={'bottom'}
+            >
               <Room 
                 style={{ 
-                  fontSize: viewport.zoom * 6,
+                  fontSize: viewport.zoom * 7,
                   cursor: 'pointer',
                   color: pin.username === currentUser ? 'rgb(255 91 71)' : 'rgb(0 0 0)'
                 }} 
@@ -96,7 +121,7 @@ function App() {
                   <p className="description">{pin.description}</p>
                   <label>Rating</label>
                   <div className="stars">
-                    <Star className="star"/>
+                    {Array(pin.rating).fill(<Star className="star"/>)}
                   </div>
                   <label>Information</label>
                   <span className="username">Created by <b>{pin.username}</b></span>
@@ -115,25 +140,43 @@ function App() {
                 onClose={() => setNewPlace(null)}
               >
                 <h4>New Pin</h4>
-                <form className='new-pin-form'>
+                <form 
+                  className='new-pin-form'
+                  onSubmit={handleSubmit}
+                >
                   <label>Title</label>
-                  <input placeholder='Enter title' />
+                  <input 
+                    placeholder='Enter title' 
+                    onChange={(e) => setNewPlace({...newPlace, 'title': e.target.value})}
+                  />
                   <label>Review</label>
-                  <textarea placeholder='Write something about this place...' />
+                  <textarea 
+                    placeholder='Write something about this place...' 
+                    onChange={(e) => setNewPlace({...newPlace, 'description': e.target.value})}
+                  />
                   <label>Rating</label>
-                  <select>
+                  <select onChange={(e) => setNewPlace({...newPlace, 'rating': e.target.value})}>
                     <option value='1'>1</option>
                     <option value='2'>2</option>
                     <option value='3'>3</option>
                     <option value='4'>4</option>
                     <option value='5'>5</option>
                   </select>
-                  <button className='new-pin-submit' type='submit'>Add Pin</button>
+                  <button className='new-pin-submit' type='submit'>
+                    Add Pin
+                  </button>
                 </form>
               </Popup>
             )}
             </>
           )
+        )}
+
+        {currentUser ? (<button className='button logout'>Logout</button>) : (
+          <div className='account-buttons'>
+            <button className='button login'>Login</button>
+            <button className='button register'>Register</button>          
+          </div>
         )}
       </Map>
     </div>
