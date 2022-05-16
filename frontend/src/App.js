@@ -9,13 +9,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 function App() {
   // State management
-  const [viewState, setViewState] = useState({
+  const [viewport, setViewport] = useState({
     latitude: 48.85,
     longitude: 2.35,
     zoom: 11
   });
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlace] = useState(null);
+  const [newPlace, setNewPlace] = useState(null);
   const currentUser = 'john-doe'
 
   // On page load
@@ -32,54 +33,105 @@ function App() {
     getPins();
   }, []);
 
-  const handleMarkerClick = (id) => {
+  const handleMarkerClick = (id, latitude, longitude) => {
     setCurrentPlace(id);
+    setViewport({
+      ...viewport,
+      latitude,
+      longitude
+    });
+  };
+
+  const handleDoubleClick = (click) => {
+    click.preventDefault();
+
+    setNewPlace({
+      'latitude': click.lngLat.lat, 
+      'longitude': click.lngLat.lng
+    });
+
+    setViewport({
+      ...viewport,
+      latitude: click.lngLat.lat,
+      longitude: click.lngLat.lng
+    });
   };
 
   return (   
     <div className="App">
       <Map
-        {...viewState}
-        onMove={evt => setViewState(evt.viewState)}
+        {...viewport}
+        onMove={evt => setViewport(evt.viewState)}
+        onDblClick={handleDoubleClick}
+        transitionDuration='1200'
         style={{width: '100vw', height: '100vh'}}
-        mapStyle="mapbox://styles/mapbox/streets-v9"
+        mapStyle='mapbox://styles/mapbox/streets-v9'
         mapboxAccessToken={process.env.REACT_APP_MAPBOX}
       >
-        {pins.map((p) => (
+        {pins.map((pin) => (
           <>
-            <Marker latitude={p.lat} longitude={p.long}>
+            <Marker latitude={pin.lat} longitude={pin.long}>
               <Room 
                 style={{ 
-                  fontSize: viewState.zoom * 6,
+                  fontSize: viewport.zoom * 6,
                   cursor: 'pointer',
-                  color: p.username === currentUser ? 'rgb(255 91 71)' : 'rgb(0 0 0)'
+                  color: pin.username === currentUser ? 'rgb(255 91 71)' : 'rgb(0 0 0)'
                 }} 
                 
-                onClick={() => handleMarkerClick(p._id)}
+                onClick={() => handleMarkerClick(pin._id, pin.lat, pin.long)}
               />
             </Marker>
-            {p._id === currentPlaceId && (
+            {pin._id === currentPlaceId && (
               <Popup 
-                latitude={p.lat} 
-                longitude={p.long} 
+                latitude={pin.lat} 
+                longitude={pin.long} 
                 closeButton={true} 
                 closeOnClick={false} 
-                anchor="top">
+                anchor="top"
+              >
                 <div className="card">
                   <label>Place</label>
-                  <h4 className="place">{p.title}</h4>
+                  <h4 className="place">{pin.title}</h4>
                   <label>Review</label>
-                  <p className="description">{p.description}</p>
+                  <p className="description">{pin.description}</p>
                   <label>Rating</label>
                   <div className="stars">
                     <Star className="star"/>
                   </div>
                   <label>Information</label>
-                  <span className="username">Created by <b>{p.username}</b></span>
-                  <span className="date">{p.createdAt}</span>
+                  <span className="username">Created by <b>{pin.username}</b></span>
+                  <span className="date">{pin.createdAt}</span>
                 </div> 
               </Popup>
-              )}
+            )}
+            {newPlace && (
+                <Popup
+                className='new-pin-popup'
+                latitude={newPlace.latitude}
+                longitude={newPlace.longitude}
+                anchor={'top'}
+                closeButton={true}
+                closeOnClick={false}
+                onClose={() => setNewPlace(null)}
+              >
+                <h4>New Pin</h4>
+                <form className='new-pin-form'>
+                  <label>Title</label>
+                  <input placeholder='Enter title' />
+                  <label>Review</label>
+                  <textarea placeholder='Write something about this place...' />
+                  <label>Rating</label>
+                  <select>
+                    <option value='1'>1</option>
+                    <option value='2'>2</option>
+                    <option value='3'>3</option>
+                    <option value='4'>4</option>
+                    <option value='5'>5</option>
+                  </select>
+                  <button className='new-pin-submit' type='submit'>Add Pin</button>
+                </form>
+              </Popup>
+            )}
             </>
           )
         )}
