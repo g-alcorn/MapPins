@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Double = require('@mongoosejs/double');
 
 const PinSchema = new mongoose.Schema(
   {
@@ -21,11 +22,11 @@ const PinSchema = new mongoose.Schema(
       max: 5
     },
     lat: {
-      type: Number,
+      type: Double,
       require: true,
     },
     long: {
-      type: Number,
+      type: Double,
       require: true,
     }
   },
