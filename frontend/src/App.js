@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl';
 import { Room, Star } from '@mui/icons-material';
 import axios from 'axios';
+import Register from './components/Register';
+import Login from './components/Login';
 
 import './App.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; 
@@ -18,6 +20,8 @@ function App() {
   const [currentPlaceId, setCurrentPlace] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
   const [currentUser, setCurrentUser] = useState('');
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
 
   // On page load
   useEffect(() => {
@@ -174,9 +178,17 @@ function App() {
 
         {currentUser ? (<button className='button logout'>Logout</button>) : (
           <div className='account-buttons'>
-            <button className='button login'>Login</button>
-            <button className='button register'>Register</button>          
+            <button className='button login' onClick={() => setShowLogin(true)}>Login</button>
+            <button className='button register' onClick={() => setShowRegister(true)}>Register</button>          
           </div>
+        )}
+
+        {showRegister && (
+          <Register setShowRegister={setShowRegister} />
+        )}
+
+        {showLogin && (
+          <Login setShowLogin={setShowLogin} />
         )}
       </Map>
     </div>

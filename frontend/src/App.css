@@ -11,10 +11,10 @@
 }
 
 label {
-  color: rgb(255 91 71);
+  color: rgb(255, 91, 71);
   font-size: 13px;
   width: 33%;
-  border-bottom: 1px solid rgb(255 91 71);
+  border-bottom: 1px solid rgb(255, 91, 71);
 }
 
 form {
@@ -27,9 +27,13 @@ form {
 
 input {
   border: none;
-  border-bottom: solid thin rgb(170 170 170);
+  border-bottom: solid thin rgb(170, 170, 170);
   padding: 1%;
   margin-top: 3px;
+}
+
+button {
+  cursor: pointer;
 }
 
 .new-pin-submit {
@@ -37,22 +41,23 @@ input {
   padding: 5px;
   margin-top: 5px;
   border-radius: 5px;
-  background-color: rgb(255 91 71)
+  background-color: rgb(255, 91, 71)
 }
 
 .button {
   border: none;
   padding: 5px;
   border-radius: 5px;
-  color: rgb(255 255 255);
+  color: rgb(255, 255, 255);
 }
 
 .login {
   background-color: rgb(88, 219, 88);
+  margin-right: 5px;
 }
 
 .logout {
-  background-color: rgb(255 91 71);
+  background-color: rgb(255, 91, 71);
 }
 
 .register {
@@ -78,7 +83,7 @@ input {
 }
 
 .star {
-  color: rgb(250 230 0);
+  color: rgb(250, 230, 0);
 }
 
 .stars {
