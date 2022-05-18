@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Map, { Marker, Popup } from 'react-map-gl';
 import { Room, Star } from '@mui/icons-material';
-import axios from 'axios';
 import Register from './components/Register';
 import Login from './components/Login';
+import { getPins, handleMarkerClick, handleDoubleClick, handleSubmit, handleLogout } from './helpers/helpers';
+import axios from 'axios';
 
 import './App.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; 
@@ -26,74 +27,15 @@ function App() {
 
   // On page load
   useEffect(() => {
-    const getPins = async () => {
-      try {
-        const res = await axios.get('api/pins');
-        setPins(res.data);
-      } catch(e) {
-        console.log(e);
-      }
-    };
-
-    getPins();
+    getPins(setPins);
   }, []);
-
-  const handleMarkerClick = (id, latitude, longitude) => {
-    setCurrentPlace(id);
-    setViewport({
-      ...viewport,
-      latitude,
-      longitude
-    });
-  };
-
-  const handleDoubleClick = (click) => {
-    click.preventDefault();
-
-    setNewPlace({
-      'latitude': click.lngLat.lat, 
-      'longitude': click.lngLat.lng
-    });
-
-    setViewport({
-      ...viewport,
-      latitude: click.lngLat.lat,
-      longitude: click.lngLat.lng
-    });
-  };
-
-  const handleSubmit = async (click) => {
-    click.preventDefault();
-
-    const newPin = {
-      username: currentUser,
-      lat: newPlace.latitude,
-      long: newPlace.longitude,
-      title: newPlace.title,
-      description: newPlace.description,
-      rating: newPlace.rating
-    };
-
-    try {
-      const res = await axios.post('api/pins', newPin)
-      setPins([...pins, res.data]);
-      setNewPlace(null);
-    } catch(e) {
-      console.log(e);
-    }
-  };
-
-  const handleLogout = async () => {
-    storage.removeItem('user');
-    setCurrentUser(null);
-  };
 
   return (   
     <div className="App">
       <Map
         {...viewport}
         onMove={evt => setViewport(evt.viewState)}
-        onDblClick={handleDoubleClick}
+        onDblClick={(click) => handleDoubleClick(click, setNewPlace, viewport, setViewport)}
         transitionDuration='1200'
         style={{width: '100vw', height: '100vh'}}
         mapStyle='mapbox://styles/mapbox/streets-v9'
@@ -113,7 +55,7 @@ function App() {
                   color: pin.username === currentUser ? 'rgb(255 91 71)' : 'rgb(0 0 0)'
                 }} 
                 
-                onClick={() => handleMarkerClick(pin._id, pin.lat, pin.long)}
+                onClick={() => handleMarkerClick(pin._id, pin.lat, pin.long, setCurrentPlace, viewport, setViewport)}
               />
             </Marker>
             {pin._id === currentPlaceId && (
@@ -152,7 +94,7 @@ function App() {
                 <h4>New Pin</h4>
                 <form 
                   className='new-pin-form'
-                  onSubmit={handleSubmit}
+                  onSubmit={(click, pins, currentUser, newPlace) => handleSubmit(click, currentUser, pins, newPlace, setPins, setNewPlace)}
                 >
                   <label>Title</label>
                   <input 
@@ -185,7 +127,7 @@ function App() {
         {currentUser ? (
           <button 
             className='button logout'
-            onClick={handleLogout}
+            onClick={() => handleLogout(setCurrentUser)}
           >
             Logout
           </button>
