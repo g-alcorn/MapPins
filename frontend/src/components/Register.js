@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Room, Cancel } from '@mui/icons-material';
 import axios from 'axios';
 import './register.css';
@@ -26,7 +26,7 @@ export default function Register({ setShowRegister }) {
     } catch(e) {
       setRegisterFailure(true);
     }
-  }
+  };
 
   return (
     <div className='register-container'>
@@ -48,6 +48,7 @@ export default function Register({ setShowRegister }) {
           <span className='failure'><b>Error!</b> Could not register.</span>
         )}
       </form>
+
       <Cancel className='register-cancel' onClick={() => setShowRegister(false)}/>
     </div>
   );

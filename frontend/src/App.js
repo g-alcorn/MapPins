@@ -11,6 +11,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 function App() {
   // State management
+  const storage = window.localStorage;
   const [viewport, setViewport] = useState({
     latitude: 48.85,
     longitude: 2.35,
@@ -19,7 +20,7 @@ function App() {
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlace] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
-  const [currentUser, setCurrentUser] = useState('');
+  const [currentUser, setCurrentUser] = useState(storage.getItem('user'));
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
 
@@ -80,7 +81,12 @@ function App() {
     } catch(e) {
       console.log(e);
     }
-  }
+  };
+
+  const handleLogout = async () => {
+    storage.removeItem('user');
+    setCurrentUser(null);
+  };
 
   return (   
     <div className="App">
@@ -176,10 +182,27 @@ function App() {
           )
         )}
 
-        {currentUser ? (<button className='button logout'>Logout</button>) : (
+        {currentUser ? (
+          <button 
+            className='button logout'
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        ) : (
           <div className='account-buttons'>
-            <button className='button login' onClick={() => setShowLogin(true)}>Login</button>
-            <button className='button register' onClick={() => setShowRegister(true)}>Register</button>          
+            <button 
+              className='button login' 
+              onClick={() => setShowLogin(true)}
+            >
+              Login
+            </button>
+            <button 
+              className='button register' 
+              onClick={() => setShowRegister(true)}
+            >
+              Register
+            </button>          
           </div>
         )}
 
@@ -188,7 +211,11 @@ function App() {
         )}
 
         {showLogin && (
-          <Login setShowLogin={setShowLogin} />
+          <Login 
+            setShowLogin={setShowLogin} 
+            setCurrentUser={setCurrentUser} 
+            storage={storage} 
+          />
         )}
       </Map>
     </div>

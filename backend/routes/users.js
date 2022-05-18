@@ -43,7 +43,7 @@ router.post('/login', async (req, res) => {
       username: user.username
     });
   } catch(e) {
-    res.status(500).json(e);
+    //res.status(500).json(e);
   }
 })
 
