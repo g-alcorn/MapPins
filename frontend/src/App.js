@@ -4,7 +4,6 @@ import { Room, Star } from '@mui/icons-material';
 import Register from './components/Register';
 import Login from './components/Login';
 import { getPins, handleMarkerClick, handleDoubleClick, handleSubmit, handleLogout } from './helpers/helpers';
-import axios from 'axios';
 
 import './App.css';
 import 'mapbox-gl/dist/mapbox-gl.css'; 
